@@ -1,0 +1,370 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <style>
+        /* 修改后的悬浮按钮样式 */
+        .coze-chat-btn {
+            width: 10000px !important; /* 增大容器尺寸 */
+            height: 10000px !important;
+            border-radius: 50% !important;
+            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3) !important;
+            transition: all 0.3s ease !important;
+            background: linear-gradient(135deg, #007bff, #0056b3) !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+            .coze-chat-btn:hover {
+                transform: scale(1.1) rotate(360deg);
+                box-shadow: 0 12px 25px rgba(0, 123, 255, 0.5) !important;
+            }
+
+        .coze-chat-btn-icon {
+            width: 500px !important; /* 增大图标尺寸 */
+            height: 500px !important;
+            background-size: contain !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important; /* 新增防止重复 */
+        }
+
+        /* 其他页面样式... */
+    </style>
+
+
+    <!-- 页面样式设置 -->
+    <style>
+
+        /* 设置页面整体的字体、背景图片、颜色和边距 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* 替换为你选择的高质量图片（以下为示例） */
+            background-image: url('https://uchat.cn-bj.ufileos.com/rw_ff9ec6eb-9d3e-4f9d-be31-34a90fcea8f8_pexels-photo-414837.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #ffffff; /* 白色文字更清晰 */
+            margin: 0;
+            padding: 0;
+            /* 新增：背景叠加层（提升文字可读性，可选） */
+            position: relative;
+        }
+
+            /* 叠加层样式（如果需要半透明遮罩） */
+            body::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.4); /* 0.4透明度的黑色遮罩 */
+                z-index: -1;
+            }
+
+        /* 设置页面标题的样式，居中显示，设置字体大小和阴影效果 */
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 36px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 设置登录表单的样式，居中显示，设置宽度、背景颜色、内边距、圆角和阴影效果 */
+        #loginForm {
+            text-align: center;
+            margin: 30px auto;
+            width: 350px;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 设置学号输入框的样式，设置内边距、右边距、宽度、边框、圆角和字体大小 */
+        #userIdInput {
+            padding: 12px;
+            margin-right: 10px;
+            width: 200px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        /* 设置密码输入框的样式，设置内边距、右边距、宽度、边框、圆角和字体大小 */
+        #passwordInput {
+            padding: 12px;
+            margin-right: 10px;
+            width: 200px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        /* 设置提交按钮的样式，设置内边距、背景颜色、文字颜色、边框、圆角、光标样式和字体大小 */
+        #submitId {
+            padding: 12px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+            /* 设置提交按钮悬停时的背景颜色 */
+            #submitId:hover {
+                background: #0056b3;
+            }
+
+        /* 设置聊天窗口容器的样式，设置位置、宽度、圆角、溢出隐藏和阴影效果 */
+        #position_demo {
+            position: absolute;
+            right: 200px;
+            bottom: 200px;
+            width: 500px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面标题 -->
+    <h1>智芯导师</h1>
+
+    <!-- 学号输入表单 -->
+    <div id="loginForm">
+        <!-- 学号输入框，提示用户输入学号姓名 -->
+        <input type="text" id="userIdInput" placeholder="请输入学号姓名">
+        <!-- 密码输入框 -->
+        <input type="password" id="passwordInput" placeholder="请输入密码">
+        <!-- 提交按钮，点击后开始使用智能体 -->
+        <button id="submitId">开始使用</button>
+    </div>
+
+    <!-- 用于挂载智能体聊天窗口的容器 -->
+    <div id="position_demo"></div>
+
+    <!-- 引入智能体SDK -->
+    <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.6/libs/cn/index.js"></script>
+    <script>
+        // 智能体的公共配置项
+        const config = {
+            // 智能体的ID
+            bot_id: '7491344074063380480',
+            // 是否使用iframe嵌入
+            isIframe: false
+        };
+
+        // 智能体组件的配置项
+        const componentProps = {
+            // 智能体的标题
+            title: '智芯导师',
+            // 智能体的图标，替换为Coze官方有效图标（示例：Coze Logo）
+            icon: 'https://lf3-cdn-tos.bytescm.com/obj/static/coze-web/assets/logo.dark.7070d5b3.png', // 有效图标URL
+            // 语言设置为中文
+            lang: 'zh-CN',
+            // 布局类型为PC端
+            layout: 'pc',
+            // 智能体窗口的宽度
+            width: 1000,
+            // 是否允许上传文件
+            uploadable: true
+        };
+
+        // 认证配置项
+        const auth = {
+            // 认证类型为令牌认证
+            type: 'token',
+            // 实际应用中需要替换为真实的令牌
+            token: 'pat_DSG5F7zbzeqpjvmES2kpRbatIgFbd2Tj2QaoaRak9Wz98M4FLF5WMmJcw2dZRZX7',
+            // 刷新令牌的回调函数，实际应用中需要实现动态获取令牌的逻辑
+            onRefreshToken: () => 'pat_DSG5F7zbzeqpjvmES2kpRbatIgFbd2Tj2QaoaRak9Wz98M4FLF5WMmJcw2dZRZX7'
+        };
+
+        // 用户信息配置项
+        const userInfo = {
+            // 用户ID，初始为空
+            id: '',
+            // 用户头像链接，替换为有效头像（示例：Coze默认头像）
+            url: 'https://lf-coze-web-cdn.coze.cn/obj/coze-web-cn/orphic/coze/favicon.1970.png', // 修正路径（原obric改为orphic）
+            // 用户昵称，初始为空
+            nickname: ''
+        };
+
+        // UI配置项
+        const ui = {
+            base: {
+                // 替换为与智能体一致的有效图标
+                icon: 'https://uchat.cn-bj.ufileos.com/rw_e3a3cf1b-7543-44e0-a9e4-7ea9cb71c052_c24c7ed5b823cfdb89525008ec50d06b.png', // 与componentProps.icon保持一致
+                // 布局类型为PC端
+                layout: 'pc',
+                // 元素的层级
+                zIndex: 1000
+            }
+        };
+
+        // 辅助按钮配置项
+        const asstBtn = {
+            // 是否需要辅助按钮
+            isNeed: true,
+            // 按钮的大小
+            style: {
+                size: 'large',
+                color:'#007bff',
+                lightColor: '#007bff33'
+            }
+        };
+
+        // 底部信息配置项
+        const footer = {
+            // 是否显示底部信息
+            isShow: true,
+            // 底部信息的文本模板
+            expressionText: 'Powered by {{name}}&{{name1}}',
+            // 底部信息的链接变量
+            linkvars: {
+                name: {
+                    text: 'A',
+                    link: 'https://www.test1.com'
+                },
+                name1: {
+                    text: 'B',
+                    link: 'https://www.test2.com'
+                }
+            }
+        };
+
+        // 头部信息配置项
+        const header = {
+            // 是否显示头部信息
+            isShow: true,
+            // 是否需要关闭按钮
+            isNeedClose: true,
+            // 头部信息的标题
+            title: '智芯导师'
+        };
+
+        // 聊天窗口配置项
+        const chatBot = {
+            // 聊天窗口的标题
+            title: " 智芯导师",
+            // 是否允许上传文件
+            uploadable: true,
+            // 聊天窗口的宽度
+            width: 500,
+            // 挂载的元素，初始为undefined
+            el: undefined,
+            // 窗口隐藏时的回调函数
+            onHide: () => console.log('窗口隐藏'),
+            // 窗口显示时的回调函数
+            onShow: () => console.log('窗口显示')
+        };
+
+        // 获取提交按钮元素
+        const submitButton = document.getElementById('submitId');
+        // 获取学号输入框元素
+        const userIdInput = document.getElementById('userIdInput');
+        // 获取密码输入框元素
+        const passwordInput = document.getElementById('passwordInput');
+        // 获取登录表单元素
+        const loginForm = document.getElementById('loginForm');
+
+        // 检查 localStorage 中是否存储了用户信息
+        const storedUserInfo = localStorage.getItem('userInfo');
+        if (storedUserInfo) {
+            const { id, password, nickname } = JSON.parse(storedUserInfo);
+            // 弹出密码输入框
+            const inputPassword = prompt('请输入密码');
+            if (inputPassword === password) {
+                userInfo.id = id;
+                userInfo.nickname = nickname;
+                const user = id;
+
+                // 恢复对话内容
+                const storedChatHistory = localStorage.getItem(`chatHistory_${id}`);
+                if (storedChatHistory) {
+                    // 这里需要根据SDK的API来恢复对话内容
+                    // 假设SDK有一个方法可以恢复对话历史
+                    // CozeWebSDK.WebChatClient.restoreChatHistory(storedChatHistory);
+                }
+
+                // 使用存储的学号姓名初始化智能体
+                new CozeWebSDK.WebChatClient({
+                    config,
+                    componentProps,
+                    auth,
+                    userInfo,
+                    ui,
+                    asstBtn,
+                    footer,
+                    header,
+                    chatBot,
+                    user
+                },
+                // 挂载到指定的容器
+                document.getElementById('position_demo')
+                );
+                // 隐藏登录表单
+                loginForm.style.display = 'none';
+            } else {
+                alert('密码错误，请重新输入');
+            }
+        }
+
+        // 为提交按钮添加点击事件监听器
+        submitButton.addEventListener('click', function() {
+            // 获取用户输入的学号姓名
+            const userInput = userIdInput.value;
+            // 获取用户输入的密码
+            const password = passwordInput.value;
+
+            if (!userInput || !password) {
+                alert('请输入学号姓名和密码');
+                return;
+            }
+
+            // 将用户输入的学号姓名赋值给用户信息
+            userInfo.id = userInput;
+            userInfo.nickname = userInput;
+
+            const user = userInput;
+
+            // 将用户信息存储到 localStorage 中，以便下次使用
+            localStorage.setItem('userInfo', JSON.stringify({ id: userInput, password, nickname: userInput }));
+
+            // 使用用户输入的学号姓名初始化智能体
+            new CozeWebSDK.WebChatClient({
+                config,
+                componentProps,
+                auth,
+                userInfo,
+                ui,
+                asstBtn,
+                footer,
+                header,
+                chatBot,
+                user
+            },
+            // 挂载到指定的容器
+            document.getElementById('position_demo')
+            );
+
+            // 隐藏登录表单
+            loginForm.style.display = 'none';
+
+            // 监听聊天消息事件，存储对话内容
+            // 假设SDK有一个事件可以监听聊天消息
+            // CozeWebSDK.WebChatClient.on('message', (message) => {
+            //     const storedChatHistory = localStorage.getItem(`chatHistory_${userInfo.id}`);
+            //     const chatHistory = storedChatHistory ? JSON.parse(storedChatHistory) : [];
+            //     chatHistory.push(message);
+            //     localStorage.setItem(`chatHistory_${userInfo.id}`, JSON.stringify(chatHistory));
+            // });
+        });
+    </script>
+</body>
+</html>
